@@ -32,7 +32,7 @@ class ngram():
 
     def next_word(self, context):
         context = word_tokenize(context)
-        word = self._quadgram_cfd[tuple(context[-3:])].max()
+        word = self._quadgram_cpd[tuple(context[-3:])].max()
         return word
 
 n = ngram()
