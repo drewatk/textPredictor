@@ -1,6 +1,7 @@
 from nltk.corpus import reuters
 from nltk.probability import ConditionalFreqDist, ConditionalProbDist, LaplaceProbDist
 from nltk import word_tokenize
+import time
 
 class ngram():
     def __init__(self):
@@ -9,6 +10,7 @@ class ngram():
 
     def _train(self):
         print 'Training models...'
+        start_time = time.time()
         self._bigram_cfd = ConditionalFreqDist()
         self._trigram_cfd = ConditionalFreqDist()
         self._quadgram_cfd = ConditionalFreqDist()
@@ -28,7 +30,8 @@ class ngram():
         self._bigram_cpd = ConditionalProbDist(self._bigram_cfd, LaplaceProbDist, len(self._bigram_cfd.conditions()))
         self._trigram_cpd = ConditionalProbDist(self._trigram_cfd, LaplaceProbDist, len(self._trigram_cfd.conditions()))
         self._quadgram_cpd = ConditionalProbDist(self._quadgram_cfd, LaplaceProbDist, len(self._quadgram_cfd.conditions()))
-        return
+
+        print 'Models trained, took %s seconds' % (time.time() - start_time)
 
     def next_word(self, context):
         context = word_tokenize(context)
