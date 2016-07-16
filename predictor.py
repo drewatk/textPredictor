@@ -1,21 +1,43 @@
-from nltk.corpus import brown
+from nltk.corpus import reuters
 from nltk.probability import ConditionalFreqDist, ConditionalProbDist, LaplaceProbDist
+from nltk import word_tokenize
 
-cfd = ConditionalFreqDist()
+class ngram():
+    def __init__(self):
+        self._corpus = reuters.words()
+        self._train()
 
-prev_word = None
-for word in brown.words():
-    if word.isalpha():
-        cfd[prev_word][word] += 1
-        prev_word = word
+    def _train(self):
+        print 'Training models...'
+        self._bigram_cfd = ConditionalFreqDist()
+        self._trigram_cfd = ConditionalFreqDist()
+        self._quadgram_cfd = ConditionalFreqDist()
+        prev_word = None
+        prev_2_word = None
+        prev_3_word = None
+        for word in self._corpus:
+            if word.isalpha():
+                self._bigram_cfd[prev_word][word] += 1
+                self._trigram_cfd[tuple([prev_2_word, prev_word])][word] += 1
+                #print tuple([prev_3_word, prev_2_word, prev_word])
+                self._quadgram_cfd[tuple([prev_3_word, prev_2_word, prev_word])][word] += 1
+                prev_3_word = prev_2_word
+                prev_2_word = prev_word
+                prev_word = word
 
-cpd = ConditionalProbDist(cfd, LaplaceProbDist, len(cfd.conditions()))
+        self._bigram_cpd = ConditionalProbDist(self._bigram_cfd, LaplaceProbDist, len(self._bigram_cfd.conditions()))
+        self._trigram_cpd = ConditionalProbDist(self._trigram_cfd, LaplaceProbDist, len(self._trigram_cfd.conditions()))
+        self._quadgram_cpd = ConditionalProbDist(self._quadgram_cfd, LaplaceProbDist, len(self._quadgram_cfd.conditions()))
+        return
 
-word = 'fortress'
+    def next_word(self, context):
+        context = word_tokenize(context)
+        word = self._quadgram_cfd[tuple(context[-3:])].max()
+        return word
 
-suggestion = []
-for i in range(30):
-    suggestion.append(word)
-    word = cpd[word].generate()
+n = ngram()
+sentence = 'I have a'
+for x in range (100):
+    sentence += (' ' + n.next_word(sentence))
 
-print " ".join(suggestion)
+print sentence
