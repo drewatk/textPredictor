@@ -1,6 +1,5 @@
 from nltk.corpus import brown
 from nltk.probability import ConditionalFreqDist, ConditionalProbDist, LaplaceProbDist
-from nltk.tokenize import word_tokenize
 
 cfd = ConditionalFreqDist()
 
