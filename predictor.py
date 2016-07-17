@@ -1,3 +1,5 @@
+#! /usr/bin/python
+
 from nltk.corpus import reuters
 from nltk.probability import FreqDist, ConditionalFreqDist, ConditionalProbDist, LaplaceProbDist
 from nltk import word_tokenize
@@ -5,7 +7,7 @@ import time
 import cPickle as pickle
 from os.path import isfile
 
-class ngram():
+class ngram(object):
     def __init__(self, load_from_disk=True):
         self._corpus = reuters.words()
 
@@ -82,9 +84,13 @@ class ngram():
         word = self._quadgram_cpd[tuple(context[-3:])].max()
         return word
 
-n = ngram()
-sentence = 'the dollar was'
-for x in range (100):
-    sentence += (' ' + n.next_word(sentence))
+def main():
+    n = ngram()
+    sentence = 'the dollar was'
+    for x in range (100):
+        sentence += (' ' + n.next_word(sentence))
 
-print sentence
+    print sentence
+    
+if __name__ == "__main__":
+    main()
